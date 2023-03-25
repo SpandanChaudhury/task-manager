@@ -92,8 +92,8 @@
         mounted(){
             const route = useRoute();
             const router = useRouter();
-            this.user = getToken('user');
-            if(this.user == undefined)
+            this.user = JSON.parse(getToken('user'));
+            if(this.user == undefined || this.user == null)
                 router.push('/');
             this.id = route.params.id;
             this.getValues();

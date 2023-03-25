@@ -7,12 +7,14 @@
 
 <script>
     import { useRoute, useRouter } from 'vue-router';
+    import { getToken } from '../../services/token.js';
     import axios from 'axios';
     export default {
         name: 'DeleteTask',
         data: () => {
             return {
-                id: ''
+                id: '',
+                user: null
             }
         },
         setup(){
@@ -21,8 +23,13 @@
             {
                 router.push('/home');
             }
+            function login_error()
+            {
+                router.push('/');
+            }
             return {
-                redirect
+                redirect,
+                login_error
             }
         },
 
@@ -44,8 +51,16 @@
         },
         mounted(){
             const route = useRoute();
-            this.id = route.params.id;
-            this.delete();
+            this.user = JSON.parse(getToken());
+            console.log(this.user);
+            if(this.user == null || this.user == undefined)
+                this.login_error();
+            else
+            {
+                this.id = route.params.id;
+                this.delete();
+            }
+           
             
         }
     }

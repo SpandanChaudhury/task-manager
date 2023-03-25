@@ -22,6 +22,7 @@
     <div class="brand-title">Task Manager</div>
     <div class="inputs">
         <form action="" @submit.prevent>
+            <label for="" v-if = 'error == 11' style = 'color: red; text-align: center'>Wrong credentials</label>
             <label>EMAIL</label>
             <input type="email" placeholder="example@test.com" v-model = 'email' required/>
             <label>PASSWORD</label>
@@ -44,7 +45,7 @@
     import axios from 'axios';
     import { authenticate } from '../../services/authentication.js';
     import { useRouter } from 'vue-router';
-    import { setToken } from '../../services/token.js';
+    import {   setToken } from '../../services/token.js';
     export default{
         name: 'LoginPage',
         data: () => {
@@ -52,16 +53,17 @@
                 email: '',
                 password: '',
                 user: null,
+                error: 10
             }
         },
         created() {
 
             this.user = JSON.parse(authenticate());
             const router = useRouter();
-            if(this.user != null)
-                router.push('/home');
-            else
+            if(this.user == null || this.user == undefined)
                 router.push('/');
+            else
+                router.push('/home');
             // else    
             //     location.reload();
                 // router.push('/');
@@ -77,10 +79,22 @@
                 console.log(data);
                 axios.post(url, data)
                 .then(response => {
-                    console.log(response.data);
-                    setToken(JSON.stringify(response.data.user));
+                    console.log(response);
+                    if(response.status == 200)
+                    {
+                        setToken(JSON.stringify(response.data.user));
+                        location.reload();
+                    }
+                    else if(response.status == 203)
+                    {
+                        // clearToken();
+                        this.error = 11;
+                        console.log('show error ');
+                        // location.reload();
+
+                    }
                     // console.log(getToken(this.user));
-                    location.reload();
+                    // location.reload();
 
                 })
                 .catch(error => {

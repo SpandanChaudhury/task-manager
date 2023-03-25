@@ -1,5 +1,5 @@
 <template>
-    <div class = 'home'>
+    <div v-if = 'admin != null' class = 'home'>
         <!-- <h2>this is admin home</h2> -->
         <h2>Welcome, {{ admin.firstname }} {{ admin.lastname }} </h2>
         <button @click = 'logout'>Logout</button>
@@ -8,7 +8,8 @@
 </template>
 
 <script>
-    import { getToken, clearToken } from '../../services/token-admin.js';
+    import { clearToken, getToken } from '../../services/token-admin.js';
+    // import { authenticate } from '../../services/authenticatioon-admin.js';
     import { useRouter } from 'vue-router';
     import AdminTasks from './AdminTasks.vue';
     export default {
@@ -28,23 +29,27 @@
         },
         data: () => {
             return {
-                admin: {},
+                admin: null
 
             }
         },
         created(){
+            // this.admin = JSON.parse(getToken('admin'));
             this.admin = JSON.parse(getToken('admin'));
             console.log(this.admin);
             const router = useRouter();
-            if(this.admin == null)
-                router.push('/admin-login');
+            if(this.admin == null || this.admin == undefined)
+                // router.('/admin-login');
+                router.replace('/admin-login');
+                // this.redirect();
+
             else
                 console.log('verified');
         },
         methods: {
             logout(){
                 clearToken('admin');
-                this.admin = {};
+                this.admin = null;
                 // location.reload();
                 this.redirect();
             }

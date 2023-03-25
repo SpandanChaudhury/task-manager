@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div v-if = 'user != null' class="home">
     <!-- <h3>this is the home page.</h3> -->
     <h2> Welcome, {{ user['firstname']}} {{ user['lastname']}}  </h2>
     <button @click = 'logout'>Logout</button>
@@ -21,8 +21,9 @@
 // import { userouter } from 'vue-router';
 import AddTask from './AddTask.vue';
 import ViewTask from './ViewTask.vue';
+// import { authenticate } from '../../services/authentication.js';
 import { useRouter } from 'vue-router';
-import { getToken, clearToken } from '../../services/token.js';
+import { clearToken, getToken } from '../../services/token.js';
 export default {
   name: 'HomeView',
   data: () => {
@@ -56,9 +57,12 @@ export default {
 
   created(){
       const router = useRouter();
+      // this.user = JSON.parse(authenticate());
       this.user = JSON.parse(getToken('user'));
       if(this.user == null)
         router.push('/');
+      else
+        router.push('/home');
       // console.log(typeof(this.user));
     
   }

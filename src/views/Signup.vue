@@ -16,6 +16,7 @@
           <input type="text" placeholder = 'lastname' v-model = 'lastname' required>
           <label> Email </label>
           <input type="email" placeholder = 'email' v-model = 'email' required>
+          <p v-if = 'mailerror == true' for="">Mail already in use</p>
           <label> Password </label>
           <input type="text" placeholder = 'password' v-model = 'password' required>
           <label for="">Confirm Password</label>
@@ -43,7 +44,8 @@
         email: '',
         password: '',
         cpassword: '',
-        // isDiabled: false
+        mailerror: false,
+        isDiabled: false
         
       }
     },
@@ -111,6 +113,8 @@
         })
         .catch(error => {
           console.log(error.response.data.error);
+          if(error.response.status == 400)
+            this.mailerror = true;
         })
       }
     }

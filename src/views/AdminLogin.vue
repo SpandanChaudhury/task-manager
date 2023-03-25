@@ -4,6 +4,7 @@
         <!-- <h2>this is the admin login</h2> -->
         <div class="inputs">
             <form action="" @submit.prevent>
+                <label for="" v-if = 'error == 11' style = 'color: red; text-align: center'>Wrong Credentials</label>
                 <label for="">Email</label>
                 <input type="text" v-model = 'email' placeholder = 'admin email' required>
                 <label for="">Password</label>
@@ -19,22 +20,43 @@
     import axios from 'axios';
     import { useRouter } from 'vue-router';
     import { setToken, getToken } from '../../services/token-admin.js';
+    // import { authenticate } from '../../services/authenticatioon-admin.js';
     export default {
         name: 'AdminLogin',
         data: () => {
             return {
                 email: '',
                 password: '',
-                admin: ''
+                admin: '',
+                error: 10
             }
         },
-        created(){
-            this.admin = JSON.parse(getToken('admin'));
+        setup(){
             const router = useRouter();
-            if(this.admin == null)
+            function reload()
+            {
+                // location.reload();
                 router.push('/admin-login');
-            else
+            }
+            function redirect()
+            {
                 router.push('/admin-home');
+            }
+            return {
+                reload,
+                redirect
+            }
+        },
+        mounted(){
+            this.admin = JSON.parse(getToken('admin'));
+            // this.admin = JSON.parse(authenticate());
+            // const router = useRouter();
+            if(this.admin == null || this.admin == undefined)
+                // router.push('/admin-login');
+                this.reload();
+            else
+                // router.push('/admin-home');
+                this.redirect();
         },
         methods: {
             submit()
@@ -48,8 +70,16 @@
                 axios.post(url, data)
                 .then(response => {
                     // console.log(response.data.admin);
-                    setToken(JSON.stringify(response.data.admin));
-                    location.reload();
+                    if(response.status == 200)
+                    {
+                        setToken(JSON.stringify(response.data.admin));
+                        location.reload();
+                    }
+                    else if(response.status == 203)
+                    {
+                        this.error = 11;
+                    }
+                    
                 })
                 .catch(error => {
                     console.log(error);
