@@ -14,7 +14,7 @@ app.post('/admin-login', (req, res) => {
             if(result.rowCount != 1)
             {
                 console.log(result.rowCount);
-                res.status(400).send({
+                res.status(203).send({
                     error: 'more than one user'
                 });
             }

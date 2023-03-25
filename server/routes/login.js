@@ -12,9 +12,11 @@ app.post('/login', (req, res) => {
     client.query(query, (error, result) => {
         if(!error)
         {
+            console.log(result);
             if(result.rowCount == 0)
             {
-                res.send('no user found');
+                // res.send('no user found');
+                res.status(203).send('no user found');
             }
             else
             {
@@ -33,7 +35,13 @@ app.post('/login', (req, res) => {
             }
         }
         else
+        {
             console.log(error);
+            res.status(400).json({
+                error: error
+            });
+
+        }
     });
 });
 module.exports = app;
